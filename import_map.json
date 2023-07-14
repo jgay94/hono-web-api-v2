@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@hono/": "https://deno.land/x/hono@v3.3.0/",
+    "@lib/": "./src/lib/"
+  }
+}

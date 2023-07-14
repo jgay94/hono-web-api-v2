@@ -1,7 +1,9 @@
 {
-  "deno.enablePaths": [
-    "./"
-  ],
   "deno.enable": true,
-  "editor.inlayHints.enabled": "off"
+  "deno.lint": true,
+  "deno.unstable": true,
+  "deno.importMap": "./import_map.json",
+  "cSpell.words": [
+    "hono"
+  ],
 }

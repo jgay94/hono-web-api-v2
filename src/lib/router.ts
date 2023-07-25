@@ -1,52 +1,64 @@
-import { Hono, MiddlewareHandler } from "@hono/mod.ts";
-// import { Router as HonoRouter } from "@hono/router.ts";
-
-type Route = {
-  method:
-    | "all"
-    | "delete"
-    | "get"
-    | "head"
-    | "options"
-    | "patch"
-    | "post"
-    | "put";
-  path: string;
-  middleware: MiddlewareHandler[];
-  // handler: (ctx: RouterContext<string>) => Promise<void> | void;
-};
+import { Context, Hono, MiddlewareHandler } from "@hono/mod.ts";
 
 export type RouteGroup = {
-  prefix: string;
+  group: {
+    prefix: string;
+    middleware: MiddlewareHandler[];
+  };
   routes: Route[];
 };
 
+type Route = {
+  method: keyof Hono;
+  path: string;
+  handler: (c: Context) => Promise<Response> | Promise<void>;
+  middleware: MiddlewareHandler[];
+};
+
+type RouterConfig = {
+  app: Hono;
+  apiPrefix: string;
+  apiRoutes: RouteGroup[];
+};
+
 export class Router {
-  // private router: HonoRouter<string>;
+  private app: Hono;
+  private apiPrefix: string;
+  private apiRoutes: RouteGroup[];
 
-  constructor(apiPrefix: string) {
-    this.router = new Hono().basePath(apiPrefix);
+  constructor({ app, apiPrefix, apiRoutes }: RouterConfig) {
+    this.app = app;
+    this.apiPrefix = apiPrefix;
+    this.apiRoutes = apiRoutes;
   }
 
-  public registerTo(app: Hono): void {
-    app.route("/", this.router);
+  get RouterName(): string {
+    return this.app.routerName;
   }
 
-  public registerRoutes(routeGroups: RouteGroup[]): void {
-    this.generateRoutes(routeGroups);
+  public setupRoutes(): void {
+    const routeGroups = this.apiRoutes;
+    this.createRoutes(routeGroups);
+    this.showRoutes();
+    console.log(`Routes created for ${this.RouterName}.`);
   }
 
-  private generateRoutes(routeGroups: RouteGroup[]): void {
-    routeGroups.forEach(({ prefix, routes }) => {
-      const group = new Hono();
-      routes.forEach(({ method, path, handler }) => {
-        if (Array.isArray(method)) {
-          method.forEach((m) => group.on(m, path, handler));
-        } else {
-          (group[method] as any)(path, handler);
-        }
+  private createRoutes(routeGroups: RouteGroup[]): void {
+    routeGroups.forEach(({ group, routes }) => {
+      routes.forEach(({ method, path, handler, middleware }) => {
+        const combinedPath = `${this.apiPrefix}${group.prefix}${path}`;
+        this.app.on(
+          method,
+          combinedPath,
+          ...group.middleware,
+          ...middleware,
+          handler,
+        );
       });
-      this.router.route(prefix, group);
     });
+  }
+
+  private showRoutes(): void {
+    this.app.showRoutes();
   }
 }

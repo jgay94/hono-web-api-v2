@@ -1,17 +1,20 @@
 import { Hono } from "@hono/mod.ts";
 import { timing } from "@hono/middleware/timing/index.ts";
 import { logger } from "@hono/middleware/logger/index.ts";
+import { RouteGroup, Router } from "./router.ts";
+
+type AppConfig = {
+  apiPrefix: string;
+  apiRoutes: RouteGroup[];
+};
 
 export class Application {
   private app: Hono;
+  private router: Router;
 
-  constructor() {
+  constructor({ apiPrefix, apiRoutes }: AppConfig) {
     this.app = new Hono();
-  }
-
-  public bootstrap(): void {
-    this.registerAppMiddleware();
-    this.setupRoutes();
+    this.router = new Router({ app: this.app, apiPrefix, apiRoutes });
   }
 
   public async handler(req: Request): Promise<Response> {
@@ -19,12 +22,13 @@ export class Application {
     return new Response(response.body, response);
   }
 
+  public bootstrap(): void {
+    this.registerAppMiddleware();
+    this.router.setupRoutes();
+  }
+
   private registerAppMiddleware(): void {
     this.app.use("*", timing());
     this.app.use("*", logger());
-  }
-
-  private setupRoutes(): void {
-    this.app.get("/", (c) => c.text("Hello world!"));
   }
 }

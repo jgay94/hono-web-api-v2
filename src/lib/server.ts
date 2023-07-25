@@ -1,28 +1,43 @@
-import { Application } from "./application.ts";
+import { Application, RouteGroup } from "@lib/mod.ts";
 
 type ServerConfig = {
   app: {
     port: number;
+    apiPrefix: string;
   };
+  apiRoutes: RouteGroup[];
 };
 
 export class Server {
-  private application: Application;
   private config: ServerConfig;
+  private app: Application;
+  private controller: AbortController;
 
   constructor(config: ServerConfig) {
-    this.application = new Application();
     this.config = config;
+    this.app = new Application({
+      apiPrefix: this.config.app.apiPrefix,
+      apiRoutes: this.config.apiRoutes,
+    });
+    this.controller = new AbortController();
   }
 
   public start(): void {
-    this.application.bootstrap();
-    this.serve(this.config.app.port);
+    this.app.bootstrap();
+    this.serve();
   }
 
-  // public stop(reason?: DOMException): void {}
+  public stop(reason?: DOMException): void {
+    this.controller.abort(reason);
+    console.log("Server stopped.");
+    if (reason) {
+      console.error(reason);
+    }
+  }
 
-  private serve(port: number): void {
-    Deno.serve({ port }, this.application.handler.bind(this.application));
+  private serve(): void {
+    const port = this.config.app.port;
+    const signal = this.controller.signal;
+    Deno.serve({ port, signal }, this.app.handler.bind(this.app));
   }
 }

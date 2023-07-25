@@ -1,6 +1,8 @@
 {
   "imports": {
     "@hono/": "https://deno.land/x/hono@v3.3.0/",
-    "@lib/": "./src/lib/"
+    "@lib/": "./src/lib/",
+    "@middleware/": "./src/middleware/",
+    "@routes/": "./src/routes/"
   }
 }

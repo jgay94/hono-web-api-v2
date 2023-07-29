@@ -1,6 +1,7 @@
 // deno-lint-ignore-file require-await
 import { RouteGroup } from "@lib/mod.ts";
 import { testHeader } from "@middleware/mod.ts";
+import { HTTPException } from "@hono/mod.ts";
 
 export const healthcheck: RouteGroup = {
   group: {
@@ -14,6 +15,14 @@ export const healthcheck: RouteGroup = {
       middleware: [],
       handler: async (c) => {
         return c.json({ success: true, message: "I'm alive!" });
+      },
+    },
+    {
+      method: "get",
+      path: "/throw",
+      middleware: [],
+      handler: async (_c) => {
+        throw new HTTPException(500, { message: "This is a test error" });
       },
     },
   ],

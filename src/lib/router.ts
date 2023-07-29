@@ -11,43 +11,38 @@ export type RouteGroup = {
 type Route = {
   method: keyof Hono;
   path: string;
-  handler: (c: Context) => Promise<Response> | Promise<void>;
   middleware: MiddlewareHandler[];
+  handler: (c: Context) => Promise<Response> | Promise<void>;
 };
 
 type RouterConfig = {
-  app: Hono;
+  router: Hono;
   apiPrefix: string;
-  apiRoutes: RouteGroup[];
 };
 
-export class Router {
-  private app: Hono;
-  private apiPrefix: string;
-  private apiRoutes: RouteGroup[];
+interface Router {
+  createRoutes(routeGroups: RouteGroup[]): void;
+  showRoutes(): void;
+}
 
-  constructor({ app, apiPrefix, apiRoutes }: RouterConfig) {
-    this.app = app;
+export class RouterImpl implements Router {
+  private router: Hono;
+  private apiPrefix: string;
+
+  constructor({ router, apiPrefix }: RouterConfig) {
+    this.router = router;
     this.apiPrefix = apiPrefix;
-    this.apiRoutes = apiRoutes;
   }
 
   get RouterName(): string {
-    return this.app.routerName;
+    return this.router.routerName;
   }
 
-  public setupRoutes(): void {
-    const routeGroups = this.apiRoutes;
-    this.createRoutes(routeGroups);
-    this.showRoutes();
-    console.log(`Routes created for ${this.RouterName}.`);
-  }
-
-  private createRoutes(routeGroups: RouteGroup[]): void {
+  public createRoutes(routeGroups: RouteGroup[]): void {
     routeGroups.forEach(({ group, routes }) => {
-      routes.forEach(({ method, path, handler, middleware }) => {
+      routes.forEach(({ method, path, middleware, handler }) => {
         const combinedPath = `${this.apiPrefix}${group.prefix}${path}`;
-        this.app.on(
+        this.router.on(
           method,
           combinedPath,
           ...group.middleware,
@@ -58,7 +53,7 @@ export class Router {
     });
   }
 
-  private showRoutes(): void {
-    this.app.showRoutes();
+  public showRoutes(): void {
+    this.router.showRoutes();
   }
 }

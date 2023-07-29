@@ -1,5 +1,5 @@
-export type { RouteGroup } from "./router.ts";
+export type { RouteGroup } from "@lib/router.ts";
 
-export { Server } from "./server.ts";
-export { Application } from "./application.ts";
-export { Router } from "./router.ts";
+export { ServerImpl as Server } from "@lib/server.ts";
+export { ApplicationImpl as Application } from "@lib/application.ts";
+export { RouterImpl as Router } from "@lib/router.ts";

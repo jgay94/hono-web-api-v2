@@ -1,20 +1,27 @@
 import { Hono } from "@hono/mod.ts";
-import { timing } from "@hono/middleware/timing/index.ts";
-import { logger } from "@hono/middleware/logger/index.ts";
-import { RouteGroup, Router } from "./router.ts";
+import { errorHandler, logger, timing } from "@middleware/mod.ts";
+
+import { RouteGroup, Router } from "@lib/mod.ts";
 
 type AppConfig = {
   apiPrefix: string;
   apiRoutes: RouteGroup[];
 };
 
-export class Application {
+interface Application {
+  handler(req: Request): Promise<Response>;
+  bootstrap(): void;
+}
+
+export class ApplicationImpl implements Application {
   private app: Hono;
   private router: Router;
+  private apiRoutes: RouteGroup[];
 
   constructor({ apiPrefix, apiRoutes }: AppConfig) {
     this.app = new Hono();
-    this.router = new Router({ app: this.app, apiPrefix, apiRoutes });
+    this.router = new Router({ router: this.app, apiPrefix });
+    this.apiRoutes = apiRoutes;
   }
 
   public async handler(req: Request): Promise<Response> {
@@ -23,12 +30,20 @@ export class Application {
   }
 
   public bootstrap(): void {
-    this.registerAppMiddleware();
-    this.router.setupRoutes();
+    this.registerMiddleware();
+    this.setupRoutes();
   }
 
-  private registerAppMiddleware(): void {
+  private registerMiddleware(): void {
+    this.app.use("*", errorHandler);
     this.app.use("*", timing());
     this.app.use("*", logger());
+    console.log("Middleware registered.");
+  }
+
+  private setupRoutes(): void {
+    this.router.createRoutes(this.apiRoutes);
+    this.router.showRoutes();
+    console.log(`Routes created for ${this.router.RouterName}.`);
   }
 }

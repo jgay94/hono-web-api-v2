@@ -1,9 +1,15 @@
-import { MiddlewareHandler } from "@hono/mod.ts";
+import { Context, MiddlewareHandler, Next } from "@hono/mod.ts";
 
-export const testHeader: MiddlewareHandler = async (ctx, next) => {
+const RESPONSE_HEADER_NAME = "x-test-header";
+const RESPONSE_HEADER_VALUE = "true";
+
+export const testHeader: MiddlewareHandler = async (
+  ctx: Context,
+  next: Next,
+) => {
   // Call the next middleware/handler in the chain
   await next();
 
   // Add 'x-test-header' to the response headers
-  ctx.res.headers.set("x-test-header", "true");
+  ctx.res.headers.set(RESPONSE_HEADER_NAME, RESPONSE_HEADER_VALUE);
 };

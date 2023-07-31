@@ -2,12 +2,14 @@ import { Server } from "@lib/mod.ts";
 import { healthcheck } from "@routes/mod.ts";
 
 const server = new Server({
-  app: {
+  server: {
     port: 8080,
     hostname: "127.0.0.1" || "localhost",
-    apiPrefix: "/api/v1",
   },
-  apiRoutes: [healthcheck],
+  app: {
+    apiPrefix: "/api/v1",
+    apiRoutes: [healthcheck],
+  },
 })
 
 if (import.meta.main) {

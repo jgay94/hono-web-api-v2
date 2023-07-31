@@ -9,11 +9,20 @@ export type RouteGroup = {
 };
 
 type Route = {
-  method: keyof Hono;
+  method: HttpMethod;
   path: string;
   middleware: MiddlewareHandler[];
   handler: (c: Context) => Promise<Response> | Promise<void>;
 };
+
+type HttpMethod =
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "OPTIONS"
+  | "PATCH"
+  | "HEAD";
 
 type RouterConfig = {
   router: Hono;

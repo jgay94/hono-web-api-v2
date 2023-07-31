@@ -1,12 +1,14 @@
 import { Application, RouteGroup } from "@lib/mod.ts";
 
 type ServerConfig = {
-  app: {
+  server: {
     port: number;
     hostname: string;
+  }
+  app: {
     apiPrefix: string;
+    apiRoutes: RouteGroup[];
   };
-  apiRoutes: RouteGroup[];
 };
 
 interface Server {
@@ -15,6 +17,7 @@ interface Server {
 }
 
 export class ServerImpl implements Server {
+
   /** Configuration object that sets up the server environment. */
   private config: ServerConfig;
 
@@ -28,7 +31,7 @@ export class ServerImpl implements Server {
     this.config = config;
     this.app = new Application({
       apiPrefix: this.config.app.apiPrefix,
-      apiRoutes: this.config.apiRoutes,
+      apiRoutes: this.config.app.apiRoutes,
     });
     this.controller = new AbortController();
   }
@@ -47,9 +50,10 @@ export class ServerImpl implements Server {
   }
 
   private serve(): void {
-    const port = this.config.app.port;
-    const hostname = this.config.app.hostname;
+    const port = this.config.server.port;
+    const hostname = this.config.server.hostname;
     const signal = this.controller.signal;
-    Deno.serve({ port, hostname, signal }, this.app.handler.bind(this.app));
+    const app = this.app;
+    Deno.serve({ port, hostname, signal }, app.handler.bind(app));
   }
 }

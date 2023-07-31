@@ -10,7 +10,7 @@ export const healthcheck: RouteGroup = {
   },
   routes: [
     {
-      method: "get",
+      method: "GET",
       path: "/",
       middleware: [],
       handler: async (c) => {
@@ -18,7 +18,7 @@ export const healthcheck: RouteGroup = {
       },
     },
     {
-      method: "get",
+      method: "GET",
       path: "/throw",
       middleware: [],
       handler: async (_c) => {

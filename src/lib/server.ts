@@ -1,10 +1,17 @@
-import { Application, RouteGroup } from "@lib/mod.ts";
+import { Application, Database, RouteGroup } from "@lib/mod.ts";
 
 type ServerConfig = {
   server: {
     port: number;
     hostname: string;
-  }
+  };
+  db: {
+    user: string;
+    database: string;
+    hostname: string;
+    port: number;
+    password?: string;
+  };
   app: {
     apiPrefix: string;
     apiRoutes: RouteGroup[];
@@ -12,14 +19,16 @@ type ServerConfig = {
 };
 
 interface Server {
-  start(): void;
-  stop(reason?: DOMException): void;
+  start(): Promise<void>;
+  stop(reason?: DOMException): Promise<void>;
 }
 
 export class ServerImpl implements Server {
-
   /** Configuration object that sets up the server environment. */
   private config: ServerConfig;
+
+  /** Database instance that connects to the database. */
+  private db: Database;
 
   /** Application instance that encapsulates route and middleware configurations. */
   private app: Application;
@@ -29,19 +38,19 @@ export class ServerImpl implements Server {
 
   constructor(config: ServerConfig) {
     this.config = config;
-    this.app = new Application({
-      apiPrefix: this.config.app.apiPrefix,
-      apiRoutes: this.config.app.apiRoutes,
-    });
+    this.db = new Database(this.config.db);
+    this.app = new Application(this.config.app);
     this.controller = new AbortController();
   }
 
-  public start(): void {
+  public async start(): Promise<void> {
+    await this.db.connect();
     this.app.bootstrap();
     this.serve();
   }
 
-  public stop(reason?: DOMException): void {
+  public async stop(reason?: DOMException): Promise<void> {
+    await this.db.disconnect();
     this.controller.abort(reason);
     console.log("Server stopped.");
     if (reason) {

@@ -2,6 +2,7 @@
   "imports": {
     "@postgres/": "https://deno.land/x/postgres@v0.17.0/",
     "@hono/": "https://deno.land/x/hono@v3.3.0/",
+    "@deps": "./deps.ts",
     "@lib/": "./src/lib/",
     "@middleware/": "./src/middleware/",
     "@routes/": "./src/routes/"

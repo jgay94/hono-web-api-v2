@@ -1,4 +1,4 @@
-import { Client } from "@postgres/mod.ts";
+import { Client } from "@deps";
 
 type DatabaseConfig = {
   user: string;

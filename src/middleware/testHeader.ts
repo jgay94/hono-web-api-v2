@@ -1,4 +1,4 @@
-import { Context, MiddlewareHandler, Next } from "@hono/mod.ts";
+import { Context, MiddlewareHandler, Next } from "@deps";
 
 const RESPONSE_HEADER_NAME = "x-test-header";
 const RESPONSE_HEADER_VALUE = "true";

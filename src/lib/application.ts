@@ -1,4 +1,4 @@
-import { Hono } from "@hono/mod.ts";
+import { Hono } from "@deps";
 import { errorHandler, logger, timing } from "@middleware/mod.ts";
 import { RouteGroup, Router } from "@lib/mod.ts";
 

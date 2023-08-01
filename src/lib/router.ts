@@ -1,4 +1,4 @@
-import { Context, Hono, MiddlewareHandler } from "@hono/mod.ts";
+import { Context, Hono, MiddlewareHandler } from "@deps";
 
 export type RouteGroup = {
   group: {

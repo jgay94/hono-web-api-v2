@@ -62,7 +62,6 @@ export class ServerImpl implements Server {
     const port = this.config.server.port;
     const hostname = this.config.server.hostname;
     const signal = this.controller.signal;
-    const app = this.app;
-    Deno.serve({ port, hostname, signal }, app.handler.bind(app));
+    Deno.serve({ port, hostname, signal }, this.app.handler.bind(this.app));
   }
 }

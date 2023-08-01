@@ -1,4 +1,4 @@
-import { Context, HTTPException, MiddlewareHandler, Next } from "@hono/mod.ts";
+import { Context, HTTPException, MiddlewareHandler, Next } from "@deps";
 
 const BAD_REQUEST = "Bad Request"; // 400
 const UNAUTHORIZED = "Unauthorized"; // 401

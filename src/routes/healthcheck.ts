@@ -1,7 +1,7 @@
 // deno-lint-ignore-file require-await
+import { HTTPException } from "@deps";
 import { RouteGroup } from "@lib/mod.ts";
 import { testHeader } from "@middleware/mod.ts";
-import { HTTPException } from "@hono/mod.ts";
 
 export const healthcheck: RouteGroup = {
   group: {

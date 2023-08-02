@@ -1,6 +1,6 @@
 import { Hono } from "@deps";
-import { errorHandler, logger, timing } from "@middleware/mod.ts";
-import { RouteGroup, Router } from "@lib/mod.ts";
+import { errorHandler, logger, timing } from "@middleware";
+import { RouteGroup, Router } from "@lib";
 
 type AppConfig = {
   apiPrefix: string;
@@ -31,6 +31,7 @@ export class ApplicationImpl implements Application {
   public bootstrap(): void {
     this.registerMiddleware();
     this.setupRoutes();
+    console.log("Application bootstrapped.");
   }
 
   private registerMiddleware(): void {
@@ -42,7 +43,7 @@ export class ApplicationImpl implements Application {
 
   private setupRoutes(): void {
     this.router.createRoutes(this.apiRoutes);
-    this.router.showRoutes();
-    console.log(`Routes created for ${this.router.RouterName}.`);
+    // this.router.showRoutes();
+    console.log(`Routes set up for ${this.router.RouterName}.`);
   }
 }

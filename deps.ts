@@ -1,5 +1,5 @@
-export type { Context, MiddlewareHandler, Next } from "@hono/mod.ts";
+export type { Context, MiddlewareHandler, Next } from "@hono";
 
-export { Client } from "@postgres/mod.ts";
-export { Hono, HTTPException } from "@hono/mod.ts";
-export { logger, timing } from "@hono/middleware.ts";
+export { Client } from "@postgres";
+export { Hono, HTTPException } from "@hono";
+export { logger, timing } from "@hono/middleware";

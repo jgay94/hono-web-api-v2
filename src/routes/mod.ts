@@ -1,1 +1,1 @@
-export { healthcheck } from "@routes/healthcheck.ts";
+export { healthcheck } from "./healthcheck.ts";

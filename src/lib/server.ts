@@ -1,4 +1,4 @@
-import { Application, Database, RouteGroup } from "@lib/mod.ts";
+import { Application, Database, RouteGroup } from "@lib";
 
 type ServerConfig = {
   server: {

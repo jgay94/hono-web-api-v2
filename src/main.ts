@@ -1,5 +1,5 @@
-import { Server } from "@lib/mod.ts";
-import { healthcheck } from "@routes/mod.ts";
+import { Server } from "@lib";
+import { healthcheck } from "@routes";
 
 const server = new Server({
   server: {

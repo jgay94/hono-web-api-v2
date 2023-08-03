@@ -1,5 +1,6 @@
 import { Context, Hono, MiddlewareHandler } from "@deps";
 
+/** Type defining the structure of a route group. */
 export type RouteGroup = {
   group: {
     prefix: string;
@@ -8,6 +9,7 @@ export type RouteGroup = {
   routes: Route[];
 };
 
+/** Type defining the structure of a route. */
 type Route = {
   method: HttpMethod;
   path: string;
@@ -15,6 +17,7 @@ type Route = {
   handler: (c: Context) => Promise<Response> | Promise<void>;
 };
 
+/** Enum defining the possible HTTP methods. */
 type HttpMethod =
   | "GET"
   | "POST"
@@ -24,33 +27,47 @@ type HttpMethod =
   | "PATCH"
   | "HEAD";
 
+/** Configuration object for the Router class. */
 type RouterConfig = {
   router: Hono;
-  apiPrefix: string;
+  routeGroups: RouteGroup[];
 };
 
+/** Interface that defines the methods for a Router object. */
 interface Router {
-  createRoutes(routeGroups: RouteGroup[]): void;
+  createRoutes(): void;
   showRoutes(): void;
 }
 
+/**
+ * Class that manages the application's routes.
+ * @implements {Router}
+ */
 export class RouterImpl implements Router {
+  /** Hono instance that sets up the base API path. */
   private router: Hono;
-  private apiPrefix: string;
 
-  constructor({ router, apiPrefix }: RouterConfig) {
+  /** Array of route groups managed by the router. */
+  private routeGroups: RouteGroup[];
+
+  /**
+   * @param {RouterConfig} config - Configuration object for the router.
+   */
+  constructor({ router, routeGroups }: RouterConfig) {
     this.router = router;
-    this.apiPrefix = apiPrefix;
+    this.routeGroups = routeGroups;
   }
 
+  /** Getter for the router's name. */
   get RouterName(): string {
     return this.router.routerName;
   }
 
-  public createRoutes(routeGroups: RouteGroup[]): void {
-    routeGroups.forEach(({ group, routes }) => {
+  /** Create routes for the router. */
+  public createRoutes(): void {
+    this.routeGroups.forEach(({ group, routes }) => {
       routes.forEach(({ method, path, middleware, handler }) => {
-        const combinedPath = `${this.apiPrefix}${group.prefix}${path}`;
+        const combinedPath = `${group.prefix}${path}`;
         this.router.on(
           method,
           combinedPath,
@@ -62,6 +79,7 @@ export class RouterImpl implements Router {
     });
   }
 
+  /** Show the routes managed by the router. */
   public showRoutes(): void {
     this.router.showRoutes();
   }

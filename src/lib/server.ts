@@ -1,7 +1,15 @@
 import { Application, Database, RouteGroup } from "@lib";
+import { log, LogLevel, setupLogger, EnvironmentName } from "@utils";
 
-/** Server configuration object that defines the server, database, and application settings. */
+/**
+ * Server configuration object that defines
+ * the environment, server, database, and application settings.
+ */
 type ServerConfig = {
+  env: {
+    name: EnvironmentName;
+    logLevel: LogLevel;
+  };
   server: {
     port: number;
     hostname: string;
@@ -30,16 +38,16 @@ interface Server {
  * @implements {Server}
  */
 export class ServerImpl implements Server {
-  /** Configuration object that sets up the server environment. */
+  /** Sets up the server environment. */
   private config: ServerConfig;
 
-  /** Database instance that connects to the database. */
+  /** Manages the database connection. */
   private db: Database;
 
-  /** Application instance that encapsulates route and middleware configurations. */
+  /** Encapsulates route and middleware configurations. */
   private app: Application;
 
-  /** AbortController instance used to signal when the server should stop. */
+  /** Used to signal when the server should stop. */
   private controller: AbortController;
 
   /**
@@ -53,32 +61,45 @@ export class ServerImpl implements Server {
   }
 
   /**
+   * Starts the server.
    * @return {Promise<void>} Resolves when the server has successfully started.
    */
   public async start(): Promise<void> {
+    await this.setupLogger();
     await this.db.connect();
     this.app.bootstrap();
     this.serve();
   }
 
   /**
+   * Stops the server.
    * @param {DOMException} [reason] - Optional reason for stopping the server.
    * @return {Promise<void>} Resolves when the server has successfully stopped.
    */
   public async stop(reason?: DOMException): Promise<void> {
     await this.db.disconnect();
     this.controller.abort(reason);
-    console.log("Server stopped.");
+    log.info("Server stopped.");
     if (reason) {
-      console.error(reason);
+      log.error(reason);
     }
   }
 
-  /** Serve the application. */
+  /** Set up the logger. */
+  private async setupLogger(): Promise<void> {
+    await setupLogger(this.config.env.logLevel);
+    log.info("Logger setup complete.");
+  }
+
+  /** Serve HTTP requests. */
   private serve(): void {
-    const port = this.config.server.port;
-    const hostname = this.config.server.hostname;
-    const signal = this.controller.signal;
-    Deno.serve({ port, hostname, signal }, this.app.handler.bind(this.app));
+    Deno.serve({
+      port: this.config.server.port,
+      hostname: this.config.server.hostname,
+      signal: this.controller.signal,
+      onListen: ({ port, hostname }) => {
+        log.info(`Listening in ${this.config.env.name} on http://${hostname}:${port}`);
+      },
+    }, this.app.handler.bind(this.app));
   }
 }

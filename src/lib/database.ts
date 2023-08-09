@@ -1,4 +1,5 @@
 import { Client } from "@deps";
+import { log } from "@utils";
 
 /** Type defining the configuration needed to connect to a database. */
 type DatabaseConfig = {
@@ -36,7 +37,7 @@ export class DatabaseImpl implements Database {
    */
   public async connect(): Promise<void> {
     await this.client.connect();
-    console.log("Database connected.");
+    log.info("Database connected.");
   }
 
   /**
@@ -45,6 +46,6 @@ export class DatabaseImpl implements Database {
    */
   public async disconnect(): Promise<void> {
     await this.client.end();
-    console.log("Database disconnected.");
+    log.info("Database disconnected.");
   }
 }

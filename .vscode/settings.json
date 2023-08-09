@@ -5,6 +5,7 @@
   "deno.importMap": "./import_map.json",
   "cSpell.words": [
     "healthcheck",
-    "hono"
+    "hono",
+    "NOTSET"
   ],
 }

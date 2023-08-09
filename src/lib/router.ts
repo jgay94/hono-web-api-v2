@@ -63,7 +63,7 @@ export class RouterImpl implements Router {
     return this.router.routerName;
   }
 
-  /** Create routes for the router. */
+  /** Create routes for the router to register. */
   public createRoutes(): void {
     this.routeGroups.forEach(({ group, routes }) => {
       routes.forEach(({ method, path, middleware, handler }) => {
@@ -79,7 +79,7 @@ export class RouterImpl implements Router {
     });
   }
 
-  /** Show the routes managed by the router. */
+  /** Display the routes managed by the router in the console. */
   public showRoutes(): void {
     this.router.showRoutes();
   }

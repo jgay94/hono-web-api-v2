@@ -1,6 +1,7 @@
 import { Hono } from "@deps";
-import { errorHandler, logger, timing } from "@middleware";
+import { log } from "@utils";
 import { RouteGroup, Router } from "@lib";
+import { errorHandler, logger, timing } from "@middleware";
 
 /** Configuration object that defines the application settings. */
 type AppConfig = {
@@ -46,8 +47,8 @@ export class ApplicationImpl implements Application {
   /** Bootstrap the application. */
   public bootstrap(): void {
     this.registerMiddleware();
-    this.setupRoutes();
-    console.log("Application bootstrapped.");
+    this.registerRoutes();
+    log.info("Application bootstrapped.");
   }
 
   /** Register the application's middleware. */
@@ -55,13 +56,13 @@ export class ApplicationImpl implements Application {
     this.app.use("*", errorHandler);
     this.app.use("*", timing());
     this.app.use("*", logger());
-    console.log("Middleware registered.");
+    log.info("Middleware registered.");
   }
 
-  /** Set up the application's routes. */
-  private setupRoutes(): void {
+  /** Register the application's routes. */
+  private registerRoutes(): void {
     this.router.createRoutes();
-    this.router.showRoutes(); // comment this line if you don't want to see the routes
-    console.log(`Routes set up for ${this.router.RouterName}.`);
+    // this.router.showRoutes(); // comment this line if you don't want to see the routes in the console
+    log.info(`Routes registered for ${this.router.RouterName}.`);
   }
 }

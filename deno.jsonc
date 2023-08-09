@@ -9,6 +9,7 @@
     "format": "deno fmt src/ && deno fmt tests/",
     "lint": "deno lint src/ && deno lint tests/",
     "test": "deno test --allow-all",
-    "ci": "deno task typecheck && deno task lint && deno task test"
+    "ci": "deno task typecheck && deno task lint && deno task test",
+    "db:init": "deno run -A --unstable https://deno.land/x/nessie/cli.ts init --dialect pg"
   }
 }

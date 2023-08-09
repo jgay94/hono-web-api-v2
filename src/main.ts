@@ -1,17 +1,22 @@
 import { Server } from "@lib";
+import { config, log } from "@utils";
 import { healthcheck } from "@routes";
 
 const server = new Server({
+  env: {
+    name: config.env.name,
+    logLevel: config.env.logLevel,
+  },
   server: {
-    port: 8080,
-    hostname: "127.0.0.1" || "localhost",
+    port: config.server.port,
+    hostname: config.server.hostname,
   },
   db: {
-    user: "postgres",
-    database: "postgres",
-    hostname: "localhost",
-    port: 5432,
-    password: "postgres",
+    user: config.db.user,
+    database: config.db.database,
+    hostname: config.db.hostname,
+    port: config.db.port,
+    password: config.db.password,
   },
   app: {
     apiPrefix: "/api/v1",
@@ -20,7 +25,11 @@ const server = new Server({
 });
 
 if (import.meta.main) {
-  await server.start();
+  try {
+    await server.start();
+  } catch (error) {
+    log.error(`Server failed to start: ${error}`);
+  }
 } else {
-  console.warn("This module is not meant to be imported.");
+  log.warning("This module is not meant to be imported.");
 }

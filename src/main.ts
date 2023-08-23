@@ -28,7 +28,8 @@ if (import.meta.main) {
   try {
     await server.start();
   } catch (error) {
-    log.error(`Server failed to start: ${error}`);
+    // log.error(`Server failed to start: ${error}`);
+    throw error;
   }
 } else {
   log.warning("This module is not meant to be imported.");

@@ -61,18 +61,18 @@ export class ServerImpl implements Server {
   }
 
   /**
-   * Starts the server.
+   * Start the server.
    * @return {Promise<void>} Resolves when the server has successfully started.
    */
   public async start(): Promise<void> {
-    await this.setupLogger();
+    await this.initLogger();
     await this.db.connect();
     this.app.bootstrap();
     this.serve();
   }
 
   /**
-   * Stops the server.
+   * Stop the server.
    * @param {DOMException} [reason] - Optional reason for stopping the server.
    * @return {Promise<void>} Resolves when the server has successfully stopped.
    */
@@ -81,14 +81,15 @@ export class ServerImpl implements Server {
     this.controller.abort(reason);
     log.info("Server stopped.");
     if (reason) {
-      log.error(reason);
+      log.debug(`Abort reason: ${reason}`);
     }
   }
 
-  /** Set up the logger. */
-  private async setupLogger(): Promise<void> {
-    await setupLogger(this.config.env.logLevel);
-    log.info("Logger setup complete.");
+  /** Initialize the logger. */
+  private async initLogger(): Promise<void> {
+    const logLevel = this.config.env.logLevel;
+    await setupLogger(logLevel);
+    log.info(`Logger initialized. Current log level: ${logLevel}.`);
   }
 
   /** Serve HTTP requests. */
@@ -98,7 +99,7 @@ export class ServerImpl implements Server {
       hostname: this.config.server.hostname,
       signal: this.controller.signal,
       onListen: ({ port, hostname }) => {
-        log.info(`Listening in ${this.config.env.name} on http://${hostname}:${port}`);
+        log.info(`Listening on http://${hostname}:${port}. Current environment: ${this.config.env.name}.`);
       },
     }, this.app.handler.bind(this.app));
   }
